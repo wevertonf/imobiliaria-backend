@@ -206,4 +206,3 @@ public class FotosImoveisController {
         }
     }
 }
-//PENDENTE: endpoint funcional para upload de fotos de imóveis!

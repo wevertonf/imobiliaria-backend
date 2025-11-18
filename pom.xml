@@ -34,6 +34,12 @@
     </properties>
     <dependencies>
 
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+
+
         <!-- Starter para Web (inclui Tomcat e Spring MVC) -->
         <dependency>
             <groupId>org.springframework.boot</groupId>

@@ -25,6 +25,11 @@ public class SenhaUtil {
      * @return true se corresponder, false caso contrário.
      */
     public static boolean verificarSenha(String senhaPlana, String hashArmazenado) {
+        //uma verificação de null aqui para evitar erros
+        if (hashArmazenado == null) {
+            System.err.println("Senha armazenada no banco é nula para verificação.");
+            return false;
+        }
         return BCrypt.checkpw(senhaPlana, hashArmazenado);
     }
 }

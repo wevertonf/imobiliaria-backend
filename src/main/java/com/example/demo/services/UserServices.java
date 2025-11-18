@@ -9,7 +9,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.example.demo.dto.UserDTO;
-import com.example.demo.model.ImoveisModel;
 import com.example.demo.model.UserModel;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.util.SenhaUtil;
@@ -107,5 +106,26 @@ public class UserServices {
         }
     }
 
-    
+    /**
+     * Método para autenticar um usuário.
+     * @param email O email fornecido pelo usuário.
+     * @param senha A senha fornecida pelo usuário (em texto plano).
+     * @return O objeto UserModel se as credenciais forem válidas, ou null se inválidas ou usuário não encontrado.
+     */
+    public UserModel login(String email, String senha) {
+        // 1. Buscar usuário pelo email
+        UserModel usuario = repositorio.findByEmail(email); // Precisa ter um método no UserRepository
+
+        // 2. Verificar se o usuário existe
+        if (usuario != null) {
+            // 3. Verificar se a senha está correta usando o utilitário
+            if (SenhaUtil.verificarSenha(senha, usuario.getSenha())) {
+                // 4. Senha correta, retornar o usuário
+                return usuario;
+            }
+            // 5. Senha incorreta
+        }
+        // 6. Usuário não encontrado ou senha incorreta
+        return null;
+    }
 }
