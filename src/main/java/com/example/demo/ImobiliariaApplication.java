@@ -26,7 +26,7 @@ public class ImobiliariaApplication {
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         // Permitir headers
         configuration.setAllowedHeaders(Arrays.asList("*"));
-        // Permitir credenciais (cookies, headers de autorização) - Crucial para sessão
+        // Permitir credenciais (cookies, headers de autorização) - Crucial para sessão.
         configuration.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
