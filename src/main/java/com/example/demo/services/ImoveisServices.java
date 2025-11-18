@@ -1,6 +1,7 @@
 package com.example.demo.services;
 
 import com.example.demo.dto.ImoveisDTO;
+import com.example.demo.dto.ImoveisListDTO;
 import com.example.demo.model.ImoveisModel;
 import com.example.demo.model.TiposImoveisModel;
 import com.example.demo.model.BairrosModel;
@@ -16,6 +17,7 @@ import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class ImoveisServices {
@@ -32,13 +34,28 @@ public class ImoveisServices {
     @Autowired
     private UserRepository usuariosRepository; // Para buscar o usuário
 
-    public List<ImoveisModel> getAll() {
+    /* public List<ImoveisModel> getAll() {
         return repositorio.findAll();
     }
 
     public Page<ImoveisModel> getAll(Pageable pageable) {
         Page<ImoveisModel> list = repositorio.findAll(pageable);
         return list;
+    } */
+
+    // --- MÉTODO GET ALL ATUALIZADO ---
+    public List<ImoveisListDTO> getAll() {
+        List<ImoveisModel> lista = repositorio.findAll();
+        // Converter a lista de Model para DTO
+        return lista.stream()
+                .map(imovel -> new ImoveisListDTO(imovel)) // Usando o construtor que popula os dados dos relacionamentos
+                .collect(Collectors.toList());
+    }
+
+    public Page<ImoveisListDTO> getAll(Pageable pageable) {
+        Page<ImoveisModel> pageModel = repositorio.findAll(pageable);
+        // Converter a página de Model para DTO
+        return pageModel.map(imovel -> new ImoveisListDTO(imovel)); // Usando o construtor que popula os dados dos relacionamentos
     }
 
     public ImoveisModel find(Integer id) {

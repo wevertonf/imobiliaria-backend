@@ -1,6 +1,7 @@
 package com.example.demo.controller;
 
 import com.example.demo.dto.ImoveisDTO;
+import com.example.demo.dto.ImoveisListDTO;
 import com.example.demo.model.ImoveisModel;
 import com.example.demo.model.TiposImoveisModel;
 import com.example.demo.services.ImoveisServices;
@@ -22,7 +23,7 @@ public class ImoveisController {
     @Autowired
     private ImoveisServices service;
 
-    @GetMapping
+    /* @GetMapping
     public ResponseEntity<List<ImoveisModel>> getAll() {
         List<ImoveisModel> lista = service.getAll();
         return ResponseEntity.status(HttpStatus.OK).body(lista);
@@ -31,6 +32,18 @@ public class ImoveisController {
     @GetMapping("/imoveis-page")
     public Page<ImoveisModel> getPosts(Pageable pageable) {
         return service.getAll(pageable);
+    } */
+
+    // --- MÉTODO GET ATUALIZADO ---
+    @GetMapping
+    public ResponseEntity<List<ImoveisListDTO>> getAll() { // Retorna DTOs
+        List<ImoveisListDTO> lista = service.getAll(); // Chama o serviço que retorna DTOs
+        return ResponseEntity.status(HttpStatus.OK).body(lista);
+    }
+
+    @GetMapping("/imoveis-page")
+    public Page<ImoveisListDTO> getPosts(Pageable pageable) { // Retorna Page de DTOs
+        return service.getAll(pageable); // Chama o serviço que retorna Page de DTOs
     }
 
     @GetMapping("/{id}")
