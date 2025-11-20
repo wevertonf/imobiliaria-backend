@@ -78,6 +78,19 @@ public class FotosImoveisServices {
         return repositorio.save(model);
     }
 
+    // --- MÉTODO UPDATE ATUALIZADO (recebe Model) ---
+    public FotosImoveisModel update(FotosImoveisModel model) {
+        try {
+            if (find(model.getId()) != null) {
+                return repositorio.save(model);
+            } else {
+                return null;
+            }
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
     /**
      * Atualiza os dados de uma foto de imóvel existente com base em um DTO.
      *
@@ -171,6 +184,11 @@ public class FotosImoveisServices {
             // return false; // Ou lançar uma RuntimeException personalizada
             throw new RuntimeException("Falha ao excluir a foto: " + e.getMessage(), e);
         }
+    }
+
+    // --- MÉTODO PARA BUSCAR POR IMÓVEL (usado no controller) ---
+    public List<FotosImoveisModel> findByImovelId(Integer imovelId) {
+        return repositorio.findByImovelId(imovelId);
     }
 
     // --- NOVO MÉTODO PARA UPLOAD ---

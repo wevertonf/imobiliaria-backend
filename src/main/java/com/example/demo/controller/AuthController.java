@@ -87,7 +87,7 @@ public class AuthController {
         UserModel usuario = (UserModel) session.getAttribute("usuarioLogado");
         if (usuario != null) {
             // Retorna dados do usuário logado (sem senha)
-            UserDTO userDTO = new UserDTO(usuario);
+            UserDTO userDTO = new UserDTO(usuario);// Usando o construtor que omite a senha e inclui o tipo
             return ResponseEntity.ok(userDTO);
         } else {
             return ResponseEntity.status(401).body("Usuário não está logado.");

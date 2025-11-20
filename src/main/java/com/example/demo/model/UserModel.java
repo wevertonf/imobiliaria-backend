@@ -9,12 +9,16 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -36,11 +40,20 @@ public class UserModel implements Serializable {
     private String email;
     @JsonIgnore
     private String senha;
-    private String tipo;
 
+    @NotNull(message = "Tipo é obrigatório")
+    @Enumerated(EnumType.STRING) // Salva o nome do enum como string no banco
+    private Tipo tipo; // Adicione este campo
+
+    public enum Tipo {
+        ADMIN, CORRETOR // Defina os tipos como enum
+    }
+    
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonManagedReference
     private List<ImoveisModel> imoveis;
+
+    
 
     public UserModel(Integer id, String nome, String email) {
         this.id = id;

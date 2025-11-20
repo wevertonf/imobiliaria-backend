@@ -27,9 +27,9 @@ public class UserServices {
     // @Autowired
     // private PasswordEncoder passwordEncoder;
 
-
-    //HTTP -> Controller -> Service (getAll()) -> Repository -> Model -> Banco de Dados
-    //Banco de Dados -> Model -> Repository -> Service -> Controller -> HTTP
+    // HTTP -> Controller -> Service (getAll()) -> Repository -> Model -> Banco de
+    // Dados
+    // Banco de Dados -> Model -> Repository -> Service -> Controller -> HTTP
     public List<UserModel> getAll() {
         List<UserModel> lista = repositorio.findAll();
         return lista;
@@ -45,12 +45,20 @@ public class UserServices {
         return model.orElse(null);
     }
 
-    /* public UserModel insert(UserModel user) {
-        return repositorio.save(user);
-        
-    } */
+    /*
+     * public UserModel insert(UserModel user) {
+     * return repositorio.save(user);
+     * 
+     * }
+     */
 
     public UserModel insert(UserDTO dto) {
+        // Verificar se email já existe
+        UserModel usuarioExistente = repositorio.findByEmail(dto.getEmail());
+        if (usuarioExistente != null) {
+            throw new RuntimeException("Email já cadastrado.");
+        }
+
         UserModel model = new UserModel();
         model.setNome(dto.getNome());
         model.setEmail(dto.getEmail());
@@ -61,8 +69,6 @@ public class UserServices {
         if (dto.getSenha() != null && !dto.getSenha().isEmpty()) {
             senhaCriptografada = SenhaUtil.hashSenha(dto.getSenha());// Usando utilitário standalone
 
-            // Se usando Spring Security PasswordEncoder:
-            // senhaCriptografada = passwordEncoder.encode(dto.getSenha());
         }
         model.setSenha(senhaCriptografada); // Pode ser null se dto.getSenha() for vazia
 
@@ -108,9 +114,11 @@ public class UserServices {
 
     /**
      * Método para autenticar um usuário.
+     * 
      * @param email O email fornecido pelo usuário.
      * @param senha A senha fornecida pelo usuário (em texto plano).
-     * @return O objeto UserModel se as credenciais forem válidas, ou null se inválidas ou usuário não encontrado.
+     * @return O objeto UserModel se as credenciais forem válidas, ou null se
+     *         inválidas ou usuário não encontrado.
      */
     public UserModel login(String email, String senha) {
         // 1. Buscar usuário pelo email

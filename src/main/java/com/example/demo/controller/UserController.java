@@ -9,7 +9,10 @@ import com.example.demo.model.ImoveisModel;
 import com.example.demo.model.UserModel;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.services.UserServices;
+import com.example.demo.util.SenhaUtil;
+
 import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -41,6 +44,9 @@ public class UserController {
     @Autowired
     private UserServices service;
 
+    @Autowired
+    private UserRepository repositorio;
+
     @GetMapping
     public ResponseEntity<List<UserDTO>> getAllUsers(HttpSession session) {
         // Verificar se o usuário está logado
@@ -56,16 +62,20 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body(usuariosDTO);
     }
 
-    /* @GetMapping("/users-page")
-    public Page<UserDTO> getPosts(Pageable pageable, HttpSession session) {
-        // Verificar se o usuário está logado
-        Object usuarioLogado = session.getAttribute("usuarioLogado"); // Nome do atributo da sessão
-        if (usuarioLogado == null) {
-            // Usuário não está logado
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
-        return service.getAll(pageable).map(UserDTO::new);// Page.map com construtor sem senha
-    } */
+    /*
+     * @GetMapping("/users-page")
+     * public Page<UserDTO> getPosts(Pageable pageable, HttpSession session) {
+     * // Verificar se o usuário está logado
+     * Object usuarioLogado = session.getAttribute("usuarioLogado"); // Nome do
+     * atributo da sessão
+     * if (usuarioLogado == null) {
+     * // Usuário não está logado
+     * return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+     * }
+     * return service.getAll(pageable).map(UserDTO::new);// Page.map com construtor
+     * sem senha
+     * }
+     */
 
     @GetMapping("/{id}")
     public ResponseEntity<UserDTO> getUserById(@PathVariable int id, HttpSession session) {
@@ -106,21 +116,20 @@ public class UserController {
     }
 
     @PostMapping
-    public ResponseEntity<Void> createUser(@RequestBody UserDTO dto, HttpSession session) {
-        // Verificar se o usuário está logado
-        Object usuarioLogado = session.getAttribute("usuarioLogado"); // Nome do atributo da sessão
-        if (usuarioLogado == null) {
-            // Usuário não está logado
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
+    public ResponseEntity<?> createUser(@RequestBody @Valid UserDTO dto) {
         try {
+            // Verificar se email já existe (opcional, mas recomendado)
+            if (repositorio.findByEmail(dto.getEmail()) != null) {
+                return ResponseEntity.status(HttpStatus.CONFLICT).body("Email já cadastrado.");
+            }
+
             UserModel model = service.insert(dto);
             URI uri = ServletUriComponentsBuilder.fromCurrentRequest()
                     .path("/{id}").buildAndExpand(model.getId()).toUri();
-            return ResponseEntity.created(uri).build();
-        } catch (Exception e) {// Tratar erros de validação, unicidade de email, etc.
+            return ResponseEntity.created(uri).body(model); // Retorna 201 Created com o objeto criado
+        } catch (Exception e) {
             e.printStackTrace(); // Log do erro
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Erro ao criar usuário: " + e.getMessage());
         }
     }
 
@@ -144,18 +153,5 @@ public class UserController {
      * Endpoint para atualizar os dados do perfil do usuário logado.
      * O ID do usuário é obtido da sessão, não da URL ou do corpo.
      */
-    
 
 }
-
-/*
- * ✅ Dicas Importantes
- * Senha: Atualizar senhas diretamente via PUT pode ser inseguro. Considere um
- * endpoint separado para alteração de senha.
- * Validação: Use @Valid e anotações do Bean Validation (como @NotNull, @Email)
- * nos campos do UserModel para validar automaticamente os dados recebidos.
- * Tratamento Global de Erros: Use @ControllerAdvice para tratar exceções
- * globais de forma padronizada.
- * Segurança: Para um projeto real, adicione Spring Security para proteger os
- * endpoints.
- */

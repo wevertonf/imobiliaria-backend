@@ -233,6 +233,10 @@ public class ImoveisServices {
         }
     }
 
+    public List<ImoveisModel> buscarPorUsuarioId(Integer usuarioId) {
+        return repositorio.findByUsuarioId(usuarioId); // Este método deve existir no Repository
+    }
+
     
 
     public boolean delete(Integer id) {
