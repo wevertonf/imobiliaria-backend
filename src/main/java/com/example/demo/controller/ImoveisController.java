@@ -28,12 +28,11 @@ public class ImoveisController {
     @Autowired
     private ImoveisServices service;
 
-    // --- MÉTODO GET ATUALIZADO ---
-    @GetMapping
+    /* @GetMapping
     public ResponseEntity<List<ImoveisListDTO>> getAll() { // Retorna DTOs
         List<ImoveisListDTO> lista = service.getAll(); // Chama o serviço que retorna DTOs
         return ResponseEntity.status(HttpStatus.OK).body(lista);
-    }
+    } */
 
     @GetMapping("/imoveis-page")
     public Page<ImoveisListDTO> getPosts(Pageable pageable) { // Retorna Page de DTOs
@@ -41,17 +40,34 @@ public class ImoveisController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ImoveisModel> getById(@PathVariable Integer id) {
+    public ResponseEntity<ImoveisListDTO> getById(@PathVariable Integer id) {
         ImoveisModel model = service.find(id);
         if (model != null) {
-            return ResponseEntity.status(HttpStatus.OK).body(model);
+            ImoveisListDTO dto = new ImoveisListDTO(model);
+            return ResponseEntity.status(HttpStatus.OK).body(dto);
         } else {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
     }
 
-    @GetMapping("/meus") // <-- Novo endpoint: GET /imoveis/meus
-    public ResponseEntity<List<ImoveisListDTO>> getMeusImoveis(HttpSession session) { // <-- MUDAR TIPO DE RETORNO PARA DTO
+    // --- MÉTODO GET ALL CORRIGIDO ---
+    @GetMapping // GET /imoveis
+    public ResponseEntity<List<ImoveisListDTO>> getAllImoveis(HttpSession session) { // <-- Tipo de retorno é DTO
+        Object usuarioLogadoObj = session.getAttribute("usuarioLogado");
+        // Se o usuário não estiver logado, ainda pode ver a lista (se quiser restringir, adicione verificação)
+        // if (usuarioLogadoObj == null) {
+        //     return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        // }
+
+        // Buscar todos os imóveis como DTOs (o service já converte)
+        List<ImoveisListDTO> dtos = service.getAll(); // <-- ✅ Chamando o método correto que retorna DTOs!
+
+        // NÃO precisa converter aqui no controller, o service já fez
+        return ResponseEntity.ok(dtos); // <-- Retorna diretamente a lista de DTOs
+    }
+
+    @GetMapping("/meus") // GET /imoveis/meus
+    public ResponseEntity<List<ImoveisListDTO>> getMeusImoveis(HttpSession session) {
         Object usuarioLogadoObj = session.getAttribute("usuarioLogado");
         if (usuarioLogadoObj == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
@@ -61,12 +77,12 @@ public class ImoveisController {
         // Chama o service para buscar imóveis do usuário logado
         List<ImoveisModel> meusImoveis = service.buscarPorUsuarioId(usuarioLogado.getId());
 
-        // Converter para DTOs antes de retornar (opcional, mas recomendado)
+        // Converter para DTOs antes de retornar
         List<ImoveisListDTO> dtos = meusImoveis.stream()
-                .map(ImoveisListDTO::new) // Assumindo que ImoveisListDTO tem construtor que recebe ImoveisModel
+                .map(ImoveisListDTO::new)
                 .collect(Collectors.toList());
 
-        return ResponseEntity.ok(dtos); // ✅ Agora está correto: retornando List<ImoveisListDTO>
+        return ResponseEntity.ok(dtos); // Retorna a lista de DTOs
     }
 
     // --- MÉTODO CREATE ATUALIZADO PARA USAR DTO ---

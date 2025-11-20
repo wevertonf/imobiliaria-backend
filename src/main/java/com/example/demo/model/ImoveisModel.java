@@ -15,6 +15,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 @Entity
 @Table(name = "imoveis")
@@ -96,9 +97,15 @@ public class ImoveisModel implements Serializable {
     // Relacionamento com Usuários (muitos imóveis para um usuário)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "usuario_id")
-    @JsonBackReference("usuario-imovel") //
+    //@JsonIgnore
+    @JsonBackReference("usuario-imovel")
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private UserModel usuario;
+    // Getter para serializar APENAS o ID do usuário associado
+    @JsonProperty("usuarioId") // <--- Nome do campo no JSON será "usuarioId"
+    public Integer getUsuarioIdFromRelationship() {
+        return this.usuario != null ? this.usuario.getId() : null;
+    }
 
     // Relacionamento com Fotos (um imóvel pode ter muitas fotos)
     // Se FotosImoveisModel tiver @JsonBackReference em "imovel", então este precisa de @JsonManagedReference

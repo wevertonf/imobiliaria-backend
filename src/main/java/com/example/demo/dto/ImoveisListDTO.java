@@ -34,10 +34,13 @@ public class ImoveisListDTO {
     private Boolean destaque;
 
     // Campos de relacionamento (apenas nomes ou IDs, não objetos completos)
+    private Integer id_tipo_imovel;  // ID do tipo de imóvel
     private String nome_tipo_imovel; // Nome do tipo de imóvel
+    private Integer id_bairro;       // ID do bairro
     private String nome_bairro;      // Nome do bairro
     private String cidade_bairro;    // Cidade do bairro
     private String estado_bairro;    // Estado do bairro
+    private Integer id_usuario;      // ID do proprietário
     private String nome_usuario;     // Nome do proprietário
     private String email_usuario;    // Email do proprietário
 
@@ -66,14 +69,17 @@ public class ImoveisListDTO {
 
         // Preencher dados dos relacionamentos
         if (imovel.getTipoImovel() != null) {
+            this.id_tipo_imovel = imovel.getTipoImovel().getId();
             this.nome_tipo_imovel = imovel.getTipoImovel().getNome();
         }
         if (imovel.getBairro() != null) {
+            this.id_bairro = imovel.getBairro().getId();
             this.nome_bairro = imovel.getBairro().getNome();
             this.cidade_bairro = imovel.getBairro().getCidade();
             this.estado_bairro = imovel.getBairro().getEstado();
         }
         if (imovel.getUsuario() != null) {
+            this.id_usuario = imovel.getUsuario().getId();
             this.nome_usuario = imovel.getUsuario().getNome();
             this.email_usuario = imovel.getUsuario().getEmail();
         }

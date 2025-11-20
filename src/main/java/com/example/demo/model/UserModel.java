@@ -51,6 +51,7 @@ public class UserModel implements Serializable {
     
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonManagedReference
+    @JsonIgnore
     private List<ImoveisModel> imoveis;
 
     
